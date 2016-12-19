@@ -35,11 +35,6 @@ In addition, this plugin uses the following plugin-specific keywords:
 		(boolean)
 		will install dependencies with the `install --build=missing` flag
 		which issues build by source for any dependency
-		
-	- build-dir
-		(path)
-		Where to do the actual building. By default creates a subfolder of `build`
-		in the source directory.
 
 """
 
@@ -58,11 +53,6 @@ class ConanPlugin(snapcraft.BasePlugin):
 			'default': 'false',
 		}
 		
-		schema['properties']['build-dir'] = {
-			'type' : 'string',
-			'default': 'build',
-		}
-		
 		return schema
 	
 	def __init__(self, name, options, project):
@@ -76,30 +66,21 @@ class ConanPlugin(snapcraft.BasePlugin):
 		
 		conan_command = ['pip', 'install', 'conan']
 		
-		self.install_missing = True if options.missing == 'true' else False
-		if options.build_dir == 'build':
-			build_dir = os.path.join(self.builddir, options.build_dir)
-			if not os.path.exists(build_dir):
-				os.makedirs(build_dir)
-			
-			self.build_dir = build_dir
+		if options.missing:
+			self.install_missing = True
 		else:
-			build_dir = os.path.join(self.builddir, options.build_dir)
-			if os.path.exists(build_dir):
-				self.build_dir = options.build_dir
-			else:
-				raise RuntimeError('Build folder not found: {}'.format(options.build_dir))
+			self.install_missing = False
 		
 	def build(self):
 		super().build()
 				
-		os.chdir(self.build_dir)
-		install_command = ['conan', 'install', os.abspath(self.builddir)]
-		build_command = ['conan', 'build', os.abspath(self.builddir)]
+		os.chdir(self.builddir)
+		install_command = ['conan', 'install', os.path.abspath(os.path.join(self.builddir, os.pardir, 'src'))]
+		build_command = ['conan', 'build', os.path.abspath(os.path.join(self.builddir, os.pardir, 'src'))]
 	
 		if self.install_missing:
 			# Build missing dependencies
-			install_command = ['--build=missing']
+			install_command.append('--build=missing')
 			
 		self.run(install_command)
 		self.run(build_command) # Unfortanly I couldn't find any -j flag for the build commands

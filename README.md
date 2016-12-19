@@ -16,8 +16,3 @@ In addition, this plugin uses the following plugin-specific keywords:
 	(boolean)
 	will install dependencies with the `install --build=missing` flag
 	which issues build by source for any dependency
-	
-- build-dir
-	(path)
-	Where to do the actual building. By default creates a subfolder of `build`
-	in the source directory.
