@@ -76,7 +76,7 @@ class ConanPlugin(snapcraft.BasePlugin):
 		self.install_missing = True if options.missing == 'true' else False
 		if options.build_dir == 'build':
 			build_dir = os.path.join(self.builddir, options.build_dir)
-			if not os.path.exists(build_dir)
+			if not os.path.exists(build_dir):
 				os.makedirs(build_dir)
 			
 			self.build_dir = build_dir
