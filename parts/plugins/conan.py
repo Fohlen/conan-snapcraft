@@ -62,6 +62,8 @@ class ConanPlugin(snapcraft.BasePlugin):
 			'type' : 'string',
 			'default': 'build',
 		}
+		
+		return schema
 	
 	def __init__(self, name, options, project):
 		super().__init__(name, options, project)
@@ -70,8 +72,9 @@ class ConanPlugin(snapcraft.BasePlugin):
 			'python-pip',
 			'python-pkg-resources',
 			'python-setuptools',
-			'conan',
 		])
+		
+		conan_command = ['pip', 'install', 'conan']
 		
 		self.install_missing = True if options.missing == 'true' else False
 		if options.build_dir == 'build':
